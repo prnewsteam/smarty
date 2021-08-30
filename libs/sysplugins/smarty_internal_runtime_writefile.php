@@ -27,8 +27,6 @@ class Smarty_Internal_Runtime_WriteFile
      */
     public function writeFile($_filepath, $_contents, Smarty $smarty)
     {
-        $_error_reporting = error_reporting();
-        error_reporting($_error_reporting & ~E_NOTICE & ~E_WARNING);
         $_file_perms = property_exists($smarty, '_file_perms') ? $smarty->_file_perms : 0644;
         $_dir_perms =
             property_exists($smarty, '_dir_perms') ? (isset($smarty->_dir_perms) ? $smarty->_dir_perms : 0777) : 0771;
@@ -47,7 +45,6 @@ class Smarty_Internal_Runtime_WriteFile
                 }
                 clearstatcache();
                 if (++$i === 3) {
-                    error_reporting($_error_reporting);
                     throw new SmartyException("unable to create directory {$_dirpath}");
                 }
                 sleep(1);
@@ -56,7 +53,6 @@ class Smarty_Internal_Runtime_WriteFile
         // write to tmp file, then move to overt file lock race condition
         $_tmp_file = $_dirpath . DIRECTORY_SEPARATOR . str_replace(array('.', ','), '_', uniqid('wrt', true));
         if (!file_put_contents($_tmp_file, $_contents)) {
-            error_reporting($_error_reporting);
             throw new SmartyException("unable to write file {$_tmp_file}");
         }
         /*
@@ -86,7 +82,6 @@ class Smarty_Internal_Runtime_WriteFile
             }
         }
         if (!$success) {
-            error_reporting($_error_reporting);
             throw new SmartyException("unable to write file {$_filepath}");
         }
         if ($_file_perms !== null) {
@@ -94,7 +89,7 @@ class Smarty_Internal_Runtime_WriteFile
             chmod($_filepath, $_file_perms);
             umask($old_umask);
         }
-        error_reporting($_error_reporting);
+
         return true;
     }
 }

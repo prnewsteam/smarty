@@ -197,8 +197,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         // fetch template content
         $level = ob_get_level();
         try {
-            $_smarty_old_error_level =
-                isset($smarty->error_reporting) ? error_reporting($smarty->error_reporting) : null;
+
             if ($this->_objType === 2) {
                 /* @var Smarty_Internal_Template $this */
                 $template->tplFunctions = $this->tplFunctions;
@@ -242,17 +241,13 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
                     }
                 }
             }
-            if (isset($_smarty_old_error_level)) {
-                error_reporting($_smarty_old_error_level);
-            }
+
             return $result;
         } catch (Exception $e) {
             while (ob_get_level() > $level) {
                 ob_end_clean();
             }
-            if (isset($_smarty_old_error_level)) {
-                error_reporting($_smarty_old_error_level);
-            }
+
             throw $e;
         }
     }
