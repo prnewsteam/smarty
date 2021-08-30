@@ -191,11 +191,19 @@ function smarty_function_fetch($params, $template)
             return;
         }
     } else {
-        $content = @file_get_contents($params[ 'file' ]);
-        if ($content === false) {
-            throw new SmartyException("{fetch} cannot read resource '" . $params[ 'file' ] . "'");
+
+        if (!file_exists($params['file'])) {
+            throw new SmartyException("{fetch} cannot read resource '" . $params['file'] . "'");
+        }
+
+        if (!empty($params['parse'])) {
+            $content = $template->smarty->fetch($params['file']);
+
+        } else {
+            $content = file_get_contents($params['file']);
         }
     }
+
     if (!empty($params[ 'assign' ])) {
         $template->assign($params[ 'assign' ], $content);
     } else {
